@@ -42,9 +42,9 @@ jobs:
   #   steps:
   #     - checkout
   #     - restore_cache:
-  #         keys: [frontend-build]
+  #         keys: [frontend-cache]
   #     - run:
-  #         name: Build front-end
+  #         name: FrontEnd Build
   #         command: |
   #           cd ./frontend
   #           npm i
@@ -60,9 +60,9 @@ jobs:
   #   steps:
   #     - checkout
   #     - restore_cache:
-  #         keys: [backend-build]
+  #         keys: [backend-cache]
   #     - run:
-  #         name: Back-end build
+  #         name: BackEnd Build
   #         command: |
   #           cd ./backend
   #           npm i
@@ -147,14 +147,14 @@ jobs:
                 --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}"\
                 --tags project="udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:8}"
                 
-        - run:
-            name: Ensure front-end infrastructure exist
-            command: |
-              aws cloudformation deploy \
-                --template-file .circleci/files/frontend.yml \
-                --stack-name "udapeople-frontend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
-                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}" \
-                --tags project="udapeopleFrontend_${CIRCLE_WORKFLOW_ID:0:8}"
+        # - run:
+        #     name: Ensure front-end infrastructure exist
+        #     command: |
+        #       aws cloudformation deploy \
+        #         --template-file .circleci/files/frontend.yml \
+        #         --stack-name "udapeople-frontend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
+        #         --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}" \
+        #         --tags project="udapeopleFrontend_${CIRCLE_WORKFLOW_ID:0:8}"
         - run:
             name: Add back-end ip to ansible inventory
             command: |
@@ -171,24 +171,31 @@ jobs:
         - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
 
-#   configure-infrastructure:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # Your code here
-#             exit 1
-#       - run:
-#           name: Configure server
-#           command: |
-#             # Your code here
-#             exit 1
-#       # Here's where you will add some code to rollback on failure      
+  configure-infrastructure:
+    docker:
+    - image: python:3.7-alpine3.11
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
+      - attach_workspace:
+          at: .circleci/ansible/
+      - run:
+          name: Install dependencies
+          command: |
+              apk add --update ansible
+              pip install awscli 
+              ansible --version
+              aws --version
+            
+      - run:
+          name: Configure server
+          working_directory: ./.circleci/ansible
+          command:  ansible-playbook -i ./.circleci/ansible/inventory.txt configure-server.yml
+      - destroy-environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:8}
+          when: on_fail
+
 
 #   run-migrations:
 #     docker:
@@ -321,8 +328,8 @@ workflows:
           # filters:
           #   branches:
           #     only: [main]
-#       - configure-infrastructure:
-#           requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
 #       - run-migrations:
 #           requires: [configure-infrastructure]
 #       - deploy-frontend:
