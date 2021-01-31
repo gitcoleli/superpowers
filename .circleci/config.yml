@@ -190,9 +190,10 @@ jobs:
           name: Install dependencies
           command: |
               pwd
+              cd inventory
               ls
-              cd project
-              ls
+              
+              
               
               
               
