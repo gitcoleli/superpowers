@@ -191,11 +191,11 @@ jobs:
           command: |
               pwd
               ls
-              cat inventory/inventory.txt
-              apk add --update ansible
-              # pip install awscli 
-              # ansible --version
-              # aws --version
+              cd inventory
+              ls
+              cat inventory.txt
+              
+
             
       - run:
           name: Configure server
