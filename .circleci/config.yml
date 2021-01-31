@@ -162,9 +162,10 @@ jobs:
                     --query 'Reservations[*].Instances[*].PublicIpAddress' \
                     --output text >> .circleci/ansible/inventory.txt
                     cat .circleci/ansible/inventory.txt
+                    pwd
 
         - persist_to_workspace:
-              root: ansible
+              root: .
               paths:
                 - .circleci/ansible/inventory.txt
   #       # Here's where you will add some code to rollback on failure      
