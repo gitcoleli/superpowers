@@ -96,17 +96,17 @@ jobs:
             cd ./backend
             sudo npm run test
 
-scan-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Scanning Frontend
-          command: |
-            cd ./frontend
-            npm i
-            npm audit fix --audit-level=critical --force
+  scan-frontend:
+      docker:
+        - image: circleci/node:13.8.0
+      steps:
+        - checkout
+        - run:
+            name: Scanning Frontend
+            command: |
+              cd ./frontend
+              npm i
+              npm audit fix --audit-level=critical --force
 
   scan-backend:
     docker:
