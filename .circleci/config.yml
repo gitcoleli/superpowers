@@ -157,14 +157,14 @@ jobs:
   # #               --tags project="udapeopleFrontend_${CIRCLE_WORKFLOW_ID:0:8}"
 
         - run:
-              name: Add back-end ip to ansible inventory
-              command: |
-                  echo "Adding backend ip to inventory"
-                  aws ec2 describe-instances \
-                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                      --filters "Name=tag:project,Values=udapeople" \
-                      --output text >> .circleci/ansible/inventory.txt
-                  cat .circleci/ansible/inventory.txt
+            name: Add back-end ip to ansible inventory
+            command: |
+                echo "Adding backend ip to inventory"
+                aws ec2 describe-instances \
+                    --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                    --filters "Name=tag:project,Values=udapeople" \
+                    --output text >> .circleci/ansible/inventory.txt
+                cat .circleci/ansible/inventory.txt
         - persist_to_workspace:
               root: ~/
               paths:
@@ -174,15 +174,12 @@ jobs:
 
   configure-infrastructure:
       docker:
-          # Docker image here that supports Ansible
           - image: python:3.7-alpine3.11
       steps:
           - checkout
-          # Add ssh keys with fingerprint
           - add_ssh_keys:
                 fingerprints:
                     - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
-          # attach workspace
           - attach_workspace:
                 at: ~/
           - run:
