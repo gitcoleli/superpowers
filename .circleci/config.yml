@@ -191,6 +191,8 @@ jobs:
           command: |
               pwd
               ls
+              cd project
+              ls
               
               
               
