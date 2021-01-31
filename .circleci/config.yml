@@ -127,25 +127,25 @@ jobs:
   #           npm i
   #           npm audit fix --audit-level=critical --force
 
-  # deploy-infrastructure:
-  #     docker:
-  #       - image: amazon/aws-cli
-  #     steps:
-  #       - checkout
-  #       - run:
-  #           name: install tar 
-  #           command: yum -y install tar 
-  #       - run:
-  #           name: install gzip 
-  #           command: yum -y install gzip           
-  #       - run:
-  #           name: Ensure back-end infrastructure exists
-  #           command: |
-  #             aws cloudformation deploy \
-  #               --template-file .circleci/files/backend.yml \
-  #               --stack-name "udapeople-backend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
-  #               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}"\
-  #               --tags project="udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:8}"
+  deploy-infrastructure:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - run:
+            name: install tar 
+            command: yum -y install tar 
+        - run:
+            name: install gzip 
+            command: yum -y install gzip           
+        - run:
+            name: Ensure back-end infrastructure exists
+            command: |
+              aws cloudformation deploy \
+                --template-file .circleci/files/backend.yml \
+                --stack-name "udapeople-backend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
+                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}"\
+                --tags project="udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:8}"
                 
   # #       - run:
   # #           name: Ensure front-end infrastructure exist
@@ -158,23 +158,22 @@ jobs:
 
         
         
-  #       - run:
-  #           name: Add back-end ip to ansible inventory
-  #           command: |
-  #                 aws ec2 describe-instances --filters Name=instance-state-name,Values=running\
-  #                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
-  #                   --output text >> inventory/inventory.txt
-  #                   cat inventory/inventory.txt
-  #                   pwd
-  #                   ls
-
-  #       - persist_to_workspace:
-  #             root: ./
-  #             paths:
-  #               - inventory/inventory.txt
-  #       # Here's where you will add some code to rollback on failure      
-  #       - destroy-environment:
-  #           workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+        - run:
+            name: "Get the IP Address of the Backend EC2 instance and create inventory"
+            command: |
+              echo -e "[web]\n" > ./.circleci/ansible/inventory
+              aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text >> ./.circleci/ansible/inventory
+              cat ./.circleci/ansible/inventory
+        - persist_to_workspace:
+              root: ansible
+              paths:
+                - .circleci/ansible/inventory.txt
+        # Here's where you will add some code to rollback on failure      
+        - destroy-environment:
+            workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
 
   configure-infrastructure:
     docker:
@@ -185,13 +184,13 @@ jobs:
           fingerprints:
             - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
       - attach_workspace:
-          at: project/.circleci/ansible
+          at: ansible
       - run:
           name: Install dependencies
           command: |
               pwd
-              cd project
               ls
+              ansible-playbook -i /tmp/ansible/inventory.txt .circleci/ansible/configure-server.yml
               
               
               
