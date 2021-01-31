@@ -185,14 +185,15 @@ jobs:
           fingerprints:
             - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
       - attach_workspace:
-          at: ./
+          at: project/.circleci/ansible
       - run:
           name: Install dependencies
           command: |
               pwd
-              cd root
-              pwd
               ls
+              
+              
+              
 
               
 
