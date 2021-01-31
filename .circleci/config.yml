@@ -36,96 +36,96 @@ commands:
 #             fi
             
 jobs:
-  build-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Build front-end
-          command: |
-            cd ./frontend
-            npm i
-            npm run build
+  # build-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-build]
+  #     - run:
+  #         name: Build front-end
+  #         command: |
+  #           cd ./frontend
+  #           npm i
+  #           npm run build
 
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-cache
+  #     - save_cache:
+  #         paths: [frontend/node_modules]
+  #         key: frontend-cache
 
-  build-backend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Back-end build
-          command: |
-            cd ./backend
-            npm i
-            npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-cache
+  # build-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: Back-end build
+  #         command: |
+  #           cd ./backend
+  #           npm i
+  #           npm run build
+  #     - save_cache:
+  #         paths: [backend/node_modules]
+  #         key: backend-cache
 
 
-  test-frontend:
-      docker:
-        - image: circleci/node:13.8.0
-      steps:
-        - checkout
-        - restore_cache:
-            keys: [frontend-cache]
-        - run:
-            name: Test frontend
-            command: |
-              cd ./frontend
-              sudo npm install oauth-sign
-              sudo npm run test
+  # test-frontend:
+  #     docker:
+  #       - image: circleci/node:13.8.0
+  #     steps:
+  #       - checkout
+  #       - restore_cache:
+  #           keys: [frontend-cache]
+  #       - run:
+  #           name: Test frontend
+  #           command: |
+  #             cd ./frontend
+  #             sudo npm install oauth-sign
+  #             sudo npm run test
                   
-  test-backend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-cache]
-      - run:
-          name: Test backend
-          command: |
-            cd ./backend
-            sudo npm run test
+  # test-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-cache]
+  #     - run:
+  #         name: Test backend
+  #         command: |
+  #           cd ./backend
+  #           sudo npm run test
 
-  scan-frontend:
-      docker:
-        - image: circleci/node:13.8.0
-      steps:
-        - checkout
-        - restore_cache:
-            keys: [frontend-cache]
-        - run:
-            name: Scanning Frontend
-            command: |
-              cd ./frontend
-              npm i
-              npm audit fix --audit-level=critical --force
+  # scan-frontend:
+  #     docker:
+  #       - image: circleci/node:13.8.0
+  #     steps:
+  #       - checkout
+  #       - restore_cache:
+  #           keys: [frontend-cache]
+  #       - run:
+  #           name: Scanning Frontend
+  #           command: |
+  #             cd ./frontend
+  #             npm i
+  #             npm audit fix --audit-level=critical --force
 
-  scan-backend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-cache]
-      - run:
-          name: Scaning Backend
-          command: |
-            cd ./backend
-            npm i
-            npm audit fix --audit-level=critical --force
+  # scan-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-cache]
+  #     - run:
+  #         name: Scaning Backend
+  #         command: |
+  #           cd ./backend
+  #           npm i
+  #           npm audit fix --audit-level=critical --force
 
   deploy-infrastructure:
       docker:
@@ -160,7 +160,7 @@ jobs:
             command: |
                   aws ec2 describe-instances --filters Name=instance-state-name,Values=running\
                     --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                    --output text >> inventory.txt
+                    --output text >> .circleci/ansible/inventory.txt
                     cat .circleci/ansible/inventory.txt
 
         - persist_to_workspace:
@@ -306,21 +306,21 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      - deploy-infrastructure
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          # filters:
+          #   branches:
+          #     only: [main]
 #       - configure-infrastructure:
 #           requires: [deploy-infrastructure]
 #       - run-migrations:
