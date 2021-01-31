@@ -127,54 +127,54 @@ jobs:
   #           npm i
   #           npm audit fix --audit-level=critical --force
 
-  deploy-infrastructure:
-      docker:
-        - image: amazon/aws-cli
-      steps:
-        - checkout
-        - run:
-            name: install tar 
-            command: yum -y install tar 
-        - run:
-            name: install gzip 
-            command: yum -y install gzip           
-        - run:
-            name: Ensure back-end infrastructure exists
-            command: |
-              aws cloudformation deploy \
-                --template-file .circleci/files/backend.yml \
-                --stack-name "udapeople-backend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
-                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}"\
-                --tags project="udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:8}"
-                
+  # deploy-infrastructure:
+  #     docker:
+  #       - image: amazon/aws-cli
+  #     steps:
+  #       - checkout
   #       - run:
-  #           name: Ensure front-end infrastructure exist
+  #           name: install tar 
+  #           command: yum -y install tar 
+  #       - run:
+  #           name: install gzip 
+  #           command: yum -y install gzip           
+  #       - run:
+  #           name: Ensure back-end infrastructure exists
   #           command: |
   #             aws cloudformation deploy \
-  #               --template-file .circleci/files/frontend.yml \
-  #               --stack-name "udapeople-frontend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
-  #               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}" \
-  #               --tags project="udapeopleFrontend_${CIRCLE_WORKFLOW_ID:0:8}"
+  #               --template-file .circleci/files/backend.yml \
+  #               --stack-name "udapeople-backend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
+  #               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}"\
+  #               --tags project="udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:8}"
+                
+  # #       - run:
+  # #           name: Ensure front-end infrastructure exist
+  # #           command: |
+  # #             aws cloudformation deploy \
+  # #               --template-file .circleci/files/frontend.yml \
+  # #               --stack-name "udapeople-frontend-Stack-${CIRCLE_WORKFLOW_ID:0:8}" \
+  # #               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}" \
+  # #               --tags project="udapeopleFrontend_${CIRCLE_WORKFLOW_ID:0:8}"
 
         
         
-        - run:
-            name: Add back-end ip to ansible inventory
-            command: |
-                  aws ec2 describe-instances --filters Name=instance-state-name,Values=running\
-                    --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                    --output text >> inventory/inventory.txt
-                    cat inventory/inventory.txt
-                    pwd
-                    ls
+  #       - run:
+  #           name: Add back-end ip to ansible inventory
+  #           command: |
+  #                 aws ec2 describe-instances --filters Name=instance-state-name,Values=running\
+  #                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+  #                   --output text >> inventory/inventory.txt
+  #                   cat inventory/inventory.txt
+  #                   pwd
+  #                   ls
 
-        - persist_to_workspace:
-              root: ./
-              paths:
-                - inventory/inventory.txt
-        # Here's where you will add some code to rollback on failure      
-        - destroy-environment:
-            workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+  #       - persist_to_workspace:
+  #             root: ./
+  #             paths:
+  #               - inventory/inventory.txt
+  #       # Here's where you will add some code to rollback on failure      
+  #       - destroy-environment:
+  #           workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
 
   configure-infrastructure:
     docker:
@@ -199,7 +199,7 @@ jobs:
             
       - run:
           name: Configure server
-          working_directory: ./.circleci/ansible
+          working_directory: ./
           command:  ansible-playbook -i inventory/inventory.txt configure-server.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
