@@ -238,7 +238,7 @@ jobs:
               curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "Migration Failed" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:8}
               curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:8}
             fi
-      - destroy_environment:
+      - destroy-environment:
           id: ${CIRCLE_WORKFLOW_ID:0:8}
           when: on_fail
 
