@@ -169,7 +169,7 @@ jobs:
                     ls
 
         - persist_to_workspace:
-              root: ~/
+              root: ./
               paths:
                 - inventory/inventory.txt
         # Here's where you will add some code to rollback on failure      
@@ -185,7 +185,7 @@ jobs:
           fingerprints:
             - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
       - attach_workspace:
-          at: ~/
+          at: ./
       - run:
           name: Install dependencies
           command: |
