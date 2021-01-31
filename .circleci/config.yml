@@ -161,7 +161,7 @@ jobs:
         - run:
             name: "Get the IP Address of the Backend EC2 instance and create inventory"
             command: |
-              aws ec2 describe-instances  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:8}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory/inventory.txt
+              aws ec2 describe-instances  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:8}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> .circleci/ansible/inventory.txt
               cat inventory/inventory.txt
         - persist_to_workspace:
               root: .circleci
@@ -180,7 +180,7 @@ jobs:
           fingerprints:
             - d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09
       - attach_workspace:
-          at: /tmp
+          at: ./
       - run:
           name: Install dependencies
           command: |
@@ -191,7 +191,7 @@ jobs:
       - run:
           name: Configure server
           
-          command:  ansible-playbook -i inventory/inventory.txt .circleci/ansible/configure-server.yml
+          command:  ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
           
