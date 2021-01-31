@@ -188,7 +188,6 @@ jobs:
                     apk add --update ansible
                     echo "Ansible inventories >> Requires for the next job"
                     cat .circleci/ansible/inventory.txt
-          - write-env-variables
           - run:
                 name: Configure server
                 no_output_timeout: 15m
