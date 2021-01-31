@@ -156,44 +156,148 @@ jobs:
   # #               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:8}" \
   # #               --tags project="udapeopleFrontend_${CIRCLE_WORKFLOW_ID:0:8}"
 
-        
-        
         - run:
-            name: "Get the IP Address of the Backend EC2 instance and create inventory"
-            command: |
-              aws ec2 describe-instances  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:8}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> .circleci/ansible/inventory.txt
-              .circleci/ansible/inventory.txt
+              name: Add back-end ip to ansible inventory
+              command: |
+                  echo "Adding backend ip to inventory"
+                  aws ec2 describe-instances \
+                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                      --filters "Name=tag:project,Values=udapeople" \
+                      --output text >> .circleci/ansible/inventory.txt
+                  cat .circleci/ansible/inventory.txt
         - persist_to_workspace:
-              root: .circleci
+              root: ~/
               paths:
-                - ansible/inventory.txt
-        # Here's where you will add some code to rollback on failure      
-        - destroy-environment:
-            workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+                  - project/.circleci/ansible/inventory.txt
+        # Here's where you will add some code to rollback on failure
+        - destroy-environment
 
   configure-infrastructure:
-    docker:
-    - image: python:3.7-alpine3.12
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09
-      - attach_workspace:
-          at: ./
-      - run:
-          name: Install dependencies
-          command: |
-              apk add --update ansible
-              pwd
-              ls
+      docker:
+          # Docker image here that supports Ansible
+          - image: python:3.7-alpine3.11
+      steps:
+          - checkout
+          # Add ssh keys with fingerprint
+          - add_ssh_keys:
+                fingerprints:
+                    - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
+          # attach workspace
+          - attach_workspace:
+                at: ~/
+          - run:
+                name: Install dependencies
+                command: |
+                    apk add --update ansible
+                    echo "Ansible inventories >> Requires for the next job"
+                    cat .circleci/ansible/inventory.txt
+          - write-env-variables
+          - run:
+                name: Configure server
+                no_output_timeout: 15m
+                command: |
+                    echo "Print directory"
+                    ls -la
+                    ansible-playbook -i .circleci/ansible/inventory.txt \
+                    .circleci/ansible/configure-server.yml
+          # Here's where you will add some code to rollback on failure
+          - run:
+                name: Install AWS CLI for rollback
+                when: on_fail
+                command: |
+                    apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
+          - destroy-environment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+  #       - run:
+  #           name: "Get the IP Address of the Backend EC2 instance and create inventory"
+  #           command: |
+  #             aws ec2 describe-instances  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:8}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> .circleci/ansible/inventory.txt
+  #             .circleci/ansible/inventory.txt
+  #       - persist_to_workspace:
+  #             root: .circleci
+  #             paths:
+  #               - ansible/inventory.txt
+  #       # Here's where you will add some code to rollback on failure      
+  #       - destroy-environment:
+  #           workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+
+  # configure-infrastructure:
+  #   docker:
+  #   - image: python:3.7-alpine3.12
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints:
+  #           - d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09
+  #     - attach_workspace:
+  #         at: ./
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #             apk add --update ansible
+  #             pwd
+  #             ls
             
-      - run:
-          name: Configure server
+  #     - run:
+  #         name: Configure server
           
-          command:  ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+  #         command:  ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+  #     - destroy-environment:
+  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
           
 
 
