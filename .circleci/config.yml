@@ -279,20 +279,19 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: circleci/python:3.7
+      - image: python:3.9.1-alpine3.12
     steps:
       - checkout
-      - node/install
       - add_ssh_keys:
           fingerprints:
             - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
       - attach_workspace:
-          at: ~/project
+          at: ~/
       - run:
           name: Install dependencies
           command: |
-            pip install awscli --upgrade --user
-            pip install --user ansible
+            apk add --update ansible tar
+            pip install awscli
       - run:
           name: Deploy backend
           command: |
