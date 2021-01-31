@@ -190,8 +190,9 @@ jobs:
           name: Install dependencies
           command: |
               pwd
-              cd .circle
+              cd root
               pwd
+              ls
 
               
 
