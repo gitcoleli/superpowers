@@ -191,7 +191,7 @@ jobs:
           command: |
               pwd
               ls
-              cat .circleci/ansible/inventory.txt
+              cat inventory/inventory.txt
               apk add --update ansible
               # pip install awscli 
               # ansible --version
