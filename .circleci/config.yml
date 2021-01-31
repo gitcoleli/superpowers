@@ -190,19 +190,18 @@ jobs:
           name: Install dependencies
           command: |
               pwd
-              ls
-              cd inventory
-              ls
-              cat inventory.txt
+              cd .circle
+              pwd
+
               
 
             
-      - run:
-          name: Configure server
-          working_directory: ./
-          command:  ansible-playbook -i inventory/inventory.txt .circleci/ansible/configure-server.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
+      # - run:
+      #     name: Configure server
+      #     working_directory: ./
+      #     command:  ansible-playbook -i inventory/inventory.txt .circleci/ansible/configure-server.yml
+      # - destroy-environment:
+      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
           
 
 
