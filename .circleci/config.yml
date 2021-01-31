@@ -243,37 +243,37 @@ jobs:
               workflow_id: ${CIRCLE_WORKFLOW_ID:0:8}
 
 
-deploy-frontend:
-    docker:
-      - image: python:3.9.1-alpine3.12
-    steps:
-      - checkout
-      - run:
-          name: Install everything
-          command: |
-            apk add --update curl nodejs npm tar
-            pip install awscli
-            cd frontend
-            npm install
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Get backend url
-          command: |
-            export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-      - run:
-          name: Build frontend
-          command: |
-            cd frontend
-            npm run build
-      - run:
-          name: Deploy frontend objects
-          command: |
-            aws s3 cp --recursive frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8}"
-      # - revert-migrations
-      - destroy-environment
+  deploy-frontend:
+      docker:
+        - image: python:3.9.1-alpine3.12
+      steps:
+        - checkout
+        - run:
+            name: Install everything
+            command: |
+              apk add --update curl nodejs npm tar
+              pip install awscli
+              cd frontend
+              npm install
+        - attach_workspace:
+            at: ~/
+        - run:
+            name: Get backend url
+            command: |
+              export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
+              export API_URL="http://${BACKEND_IP}:3030"
+              echo "${API_URL}"
+        - run:
+            name: Build frontend
+            command: |
+              cd frontend
+              npm run build
+        - run:
+            name: Deploy frontend objects
+            command: |
+              aws s3 cp --recursive frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8}"
+        # - revert-migrations
+        - destroy-environment
 
       # Here's where you will add some code to rollback on failure      
                     
