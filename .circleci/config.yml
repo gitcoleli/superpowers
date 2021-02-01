@@ -296,7 +296,7 @@ jobs:
         # - revert-migrations
         - destroy-environment
 
-deploy-backend:
+    deploy-backend:
         docker:
             - image: python:3.7-alpine3.11
             # Docker image here that supports Ansible
