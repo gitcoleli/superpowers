@@ -1,17 +1,10 @@
 ---
 
-- name: "install Ansible dependencies"
+- name: Copy backend 
   become: true
-  apt:
-    name: ["nodejs", "npm", "python3", "tar", "gzip", "git"]
-    state: latest
-    update_cache: yes
-
-- name: "Unarchive backend js files"
-  become: yes
-  unarchive:
-    src: /root/project/backend.tar.gz
-    dest: .
+  copy:
+      src: /root/project/backend
+      dest: /home/ubuntu
 
 - name: "install pm2"
   become: true
@@ -21,11 +14,28 @@
     production: yes
     state: present
 
-
-
-- name: building node 
+- name: Install Node modules
+  become: true
+  shell: |
+      cd /home/ubuntu/backend
+      ls -la
+      printenv
+      npm install
+- name: building node services
   become: true
   shell: |
       cd /home/ubuntu/backend
       npm run build
       npm run prestart:prod
+- name: "run migrations again"
+  become: true
+  shell: |
+      cd /home/ubuntu/backend
+      npm run migrations
+- name: Executing node
+  become: true
+  shell: |
+      cd /home/ubuntu/backend 
+      pm2 start npm --name backend -- start
+      pm2 ls
+
