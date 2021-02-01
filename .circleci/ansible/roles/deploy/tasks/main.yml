@@ -18,7 +18,7 @@
 - name:  backend code to remote server
   become: true
   copy:
-      src: /root/project/backend
+      src: /root/project/dist/backend.tar.gz
       dest: /home/ubuntu
 
 - name: building node 

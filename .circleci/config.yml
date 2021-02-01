@@ -68,6 +68,17 @@ jobs:
             cd ./backend
             npm i
             npm run build
+      - run:
+          name: zip up the build
+          command: |
+            mkdir /dist
+            ls
+            npm i
+            tar -zcvf /dist/backend.tar.gz ./
+      - persist_to_workspace:
+          root: /dist
+          paths:
+            - backend.tar.gz
       - save_cache:
           paths: [backend/node_modules]
           key: backend-cache
