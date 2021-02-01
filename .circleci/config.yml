@@ -68,17 +68,6 @@ jobs:
             cd ./backend
             npm i
             npm run build
-      - run:
-          name: save backend build
-          command: |
-            ls -la
-            cd backend
-            npm install
-            tar -zcvf /tmp/workspace/backend.tar.gz ./
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - backend.tar.gz
       - save_cache:
           paths: [backend/node_modules]
           key: backend-cache
@@ -310,7 +299,13 @@ jobs:
       - run:
           name: Deploy backend
           command: |
+            cat ~/backend/.env
+            mv ~/backend/.env backend/.env
+            cat backend/.env
+            tar -czvf backend.tar.gz backend
+            cd .circleci/ansible
             cat .circleci/ansible/inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i .circleci/ansible/inventory.txt \
             .circleci/ansible/deploy-backend.yml
       # - destroy-environment:

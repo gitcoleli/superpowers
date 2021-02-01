@@ -7,6 +7,12 @@
     state: latest
     update_cache: yes
 
+- name: "Unarchive backend js files"
+  become: yes
+  unarchive:
+    src: /root/project/backend.tar.gz
+    dest: .
+
 - name: "install pm2"
   become: true
   npm:
@@ -15,11 +21,7 @@
     production: yes
     state: present
 
-- name:  backend code to remote server
-  become: true
-  copy:
-      src: /root/project/dist/backend.tar.gz
-      dest: /home/ubuntu
+
 
 - name: building node 
   become: true
