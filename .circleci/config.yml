@@ -55,22 +55,22 @@ jobs:
   #         paths: [frontend/node_modules]
   #         key: frontend-cache
 
-  # build-backend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-cache]
-  #     - run:
-  #         name: BackEnd Build
-  #         command: |
-  #           cd ./backend
-  #           npm i
-  #           npm run build
-  #     - save_cache:
-  #         paths: [backend/node_modules]
-  #         key: backend-cache
+  build-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-cache]
+      - run:
+          name: BackEnd Build
+          command: |
+            cd ./backend
+            npm i
+            npm run build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-cache
 
 
   # test-frontend:
@@ -284,7 +284,8 @@ jobs:
       - image: python:3.9.1-alpine3.12
     steps:
       - checkout
-      # - node/install
+      - restore_cache:
+          keys: [backend-cache]
       - add_ssh_keys:
           fingerprints:
             - d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09
@@ -393,7 +394,7 @@ workflows:
   default:
     jobs:
       # - build-frontend
-      # - build-backend
+      - build-backend
       # - test-frontend:
       #     requires: [build-frontend]
       # - test-backend:
