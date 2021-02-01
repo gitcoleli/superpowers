@@ -139,9 +139,7 @@ jobs:
         docker:
             - image: amazon/aws-cli
         steps:
-            # Checkout code from git
             - checkout
-            - aws-cli/setup
             - add_ssh_keys:
                   fingerprints:
                       - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
