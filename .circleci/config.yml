@@ -74,9 +74,9 @@ jobs:
             mkdir /dist
             ls
             npm i
-            tar -zcvf /dist/backend.tar.gz ./
+            tar -zcvf /tmp/dist/backend.tar.gz ./
       - persist_to_workspace:
-          root: /dist
+          root: /tmp/dist
           paths:
             - backend.tar.gz
       - save_cache:
