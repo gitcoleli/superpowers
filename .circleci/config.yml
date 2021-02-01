@@ -291,11 +291,13 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar
+            apk add --update ansible
             pip install awscli
       - run:
           name: Deploy backend
           command: |
+            mkdir dist
+            cp --recursive /tmp/workspace/backend.tar.gz dist
             cat .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt \
             .circleci/ansible/deploy-backend.yml

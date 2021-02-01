@@ -15,17 +15,22 @@
     production: yes
     state: present
 
-- name: "untar the backend app file"
-  become_user: ubuntu
+- name: Creates directory
+  file:
+    path: ~/web
+    state: directory
+- name: get backend
   become: yes
-  unarchive:
-    src: ~/project/backend.tar
-    dest: ~/
-
-- name: "start PM2"
-  become_user: ubuntu
+  copy:
+    src: ../../../../dist/backend.tar.gz
+    dest: web
+- name: Unarchive backend
   become: yes
   shell: |
-    cd ~/backend
-    npm i
-    pm2 start npm --name backend -- start
+    cd /home/ubuntu/web
+    tar -xvzf backend.tar.gz
+- name: start 
+  become: yes
+  shell: |    
+    cd /home/ubuntu/web
+    pm2 start npm --no-automation --name "backend" -- run start
