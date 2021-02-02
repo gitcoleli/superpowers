@@ -367,7 +367,7 @@ jobs:
         - run:
             name: Install dependencies
             command: |
-                sudo apt install python-pip python-dev
+                sudo apt install python-pip 
                 sudo pip install awscli
         - run:
             name: Get backend url & Deploy frontend objects
@@ -459,47 +459,47 @@ jobs:
 # ######################################################################################
 
 
-#   deploy-backend:
-#         docker:
-#             - image: python:3.7-alpine3.11
-#             # Docker image here that supports Ansible
-#         steps:
-#             # Checkout code from git
-#             - checkout
-#             # Add ssh keys with fingerprint
-#             - add_ssh_keys:
-#                   fingerprints:
-#                       - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
-#             # attach workspace
-#             - attach_workspace:
-#                   at: ~/
-#             - run:
-#                   name: Install dependencies
-#                   command: |
-#                       # your code here
-#                       apk add --update tar gzip ansible nodejs npm curl openssh-client
-#                       pip install awscli
-#             - restore_cache:
-#                   keys:
-#                       - "backend-dist"
-#             - enviroment-variables
+  deploy-backend:
+        docker:
+            - image: python:3.7-alpine3.11
+            # Docker image here that supports Ansible
+        steps:
+            # Checkout code from git
+            - checkout
+            # Add ssh keys with fingerprint
+            - add_ssh_keys:
+                  fingerprints:
+                      - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
+            # attach workspace
+            - attach_workspace:
+                  at: ~/
+            - run:
+                  name: Install dependencies
+                  command: |
+                      # your code here
+                      apk add --update tar gzip ansible nodejs npm curl openssh-client
+                      pip install awscli
+            - restore_cache:
+                  keys:
+                      - "backend-dist"
+            - enviroment-variables
 
 
 ##################################################################################################
 
 
-            # - run:
-            #       name: Deploy backend using ansible it takes a while 
-            #       no_output_timeout: 30m
-            #       command: |
-            #           #!/bin/bash
-            #           pwd
-            #           cd .circleci/ansible/
-            #           pwd
-            #           ls
-            #           cat inventory.txt
-            #           ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt deploy-backend.yml
-            # - destroy-environment
+            - run:
+                  name: Deploy backend using ansible it takes a while 
+                  no_output_timeout: 30m
+                  command: |
+                      #!/bin/bash
+                      pwd
+                      cd .circleci/ansible/
+                      pwd
+                      ls
+                      cat inventory.txt
+                      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt deploy-backend.yml
+            - destroy-environment
 ##################################################################################################
 
 
@@ -599,8 +599,8 @@ jobs:
 workflows:
   default:
     jobs:
-    #   - build-frontend
-    #   - build-backend
+      - build-frontend
+      - build-backend
     #   - test-frontend:
     #       requires: [build-frontend]
     #   - test-backend:
@@ -609,19 +609,19 @@ workflows:
     #       requires: [build-backend]
     #   - scan-frontend:
     #       requires: [build-frontend]
-    #   - deploy-infrastructure:
-    #       requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-    #       filters:
-    #         branches:
-    #           only: [main]
-    #   - configure-infrastructure:
-    #       requires: [deploy-infrastructure]
-    #   - run-migrations:
-    #       requires: [configure-infrastructure]
-        - deploy-frontend
-    #       requires: [run-migrations]
-    #   - deploy-backend:
-    #       requires: [configure-infrastructure]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [main]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [configure-infrastructure]
     #   - smoke-test
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
