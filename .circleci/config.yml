@@ -249,6 +249,24 @@ jobs:
                         echo "Ansible inventories >> Requires for the next job"
                         cat .circleci/ansible/inventory.txt
             - enviroment-variables
+
+################ temp aws install for re adding the ip ##############################
+
+            - run:
+                    name: Install AWS CLI for rollback
+                    command: |
+                        apk add --update pip 
+                        pip install --upgrade pip 
+                        pip install awscli
+                        aws ec2 describe-instances \
+                        --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                        --filters "Name=tag:project,Values=udapeople" \
+                        --output text >> .circleci/ansible/inventory.txt
+                        cat .circleci/ansible/inventory.txt            
+
+####################################################################################
+
+
             - run:
                     name: Configure server
                     no_output_timeout: 20m
@@ -504,12 +522,12 @@ workflows:
         #       only: [main]
       - configure-infrastructure
         #   requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+    #   - run-migrations:
+    #       requires: [configure-infrastructure]
+    #   - deploy-frontend:
+    #       requires: [run-migrations]
+    #   - deploy-backend:
+    #       requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
