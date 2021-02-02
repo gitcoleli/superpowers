@@ -281,26 +281,7 @@ jobs:
           name: Run migrations
           command: |
             pwd
-            ls
-            mkdir banana
-            # touch .env
-            # echo ENVIROMENT=production > .env
-            # echo TYPEORM_CONNECTION=postgres >> .env
-            # echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> .env
-            # echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> .env
-            # echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> .env
-            # echo TYPEORM_HOST=$TYPEORM_HOST >> .env
-            # echo TYPEORM_PORT=$TYPEORM_PORT >> .env
-            # echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> .env
-            # echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
-            # echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> .env
-            # cd backend
-            ls -latr
-            # cat .env
-            # npm i
-            # npm install oauth-sign
-            # npm run migrations > migrationresult.txt
-            # cat migrationresult.txt
+            cd /backend
 
 # send the information out to memstash ##################################################################################################################
                 
