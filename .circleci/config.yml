@@ -277,11 +277,15 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+                # Restore from cache
+      - restore_cache:
+                keys:
+                    - backend-build
       - run:
           name: Run migrations
           command: |
             pwd
-            cd /backend
+            ls -latr 
 
 # send the information out to memstash ##################################################################################################################
                 
