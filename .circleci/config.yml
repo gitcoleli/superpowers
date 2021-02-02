@@ -279,8 +279,8 @@ jobs:
       - checkout
       - run:
           name: Run migrations
-          working_directory: ./backend
           command: |
+            cd backend 
             touch .env
             echo ENVIROMENT=production > .env
             echo TYPEORM_CONNECTION=postgres >> .env
