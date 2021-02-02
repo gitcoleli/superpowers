@@ -253,7 +253,7 @@ jobs:
 ################ temp aws install for re adding the ip ##############################
 
             - run:
-                    name: Install AWS CLI for rollback
+                    name: adding ip to inv again 
                     command: |
                         apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
                         aws ec2 describe-instances \
@@ -438,7 +438,7 @@ jobs:
                       pwd
                       ls
                       cat inventory.txt
-                      #ansible-playbook -i inventory.txt deploy-backend.yml
+                      ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
 
 ##################################################################################################
 
