@@ -438,7 +438,7 @@ jobs:
                       pwd
                       ls
                       cat inventory.txt
-                      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt configure-server.yml
+                      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt deploy-backend.yml
 
 ##################################################################################################
 
