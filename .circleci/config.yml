@@ -282,6 +282,7 @@ jobs:
           command: |
             pwd
             ls
+            mkdir banana
             # touch .env
             # echo ENVIROMENT=production > .env
             # echo TYPEORM_CONNECTION=postgres >> .env
@@ -294,7 +295,7 @@ jobs:
             # echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
             # echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> .env
             # cd backend
-            # ls -latr
+            ls -latr
             # cat .env
             # npm i
             # npm install oauth-sign
