@@ -300,12 +300,16 @@ jobs:
 
 # send the information out to memstash ##################################################################################################################
                 
-#       - run:
-#           name: Send migration results to memstash
-#           command: |
-#             # Your code here
-#             exit 1
-#      # Here's where you will add some code to rollback on failure      
+      - run:
+          name: Send migration results to memstash
+          command: |
+            if grep -q "has been executed successfully" migrations.txt; then 
+              curl -H "Content-Type: text/plain" -H "token:ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
+            else
+              curl -H "Content-Type: text/plain" -H "token:ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
+            fi
+
+     # Here's where you will add some code to rollback on failure      
 
 
 # deploy the Frontend ################################################################################
@@ -324,20 +328,38 @@ jobs:
             command: |
                 sudo apt install python-pip
                 sudo pip install awscli
+
+
+###################################################################
+
+        - run:
+            name: Get backend url
+            command: |
+                BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
+                export API_URL="http://${BACKEND_IP}:3030"
+                echo "${API_URL}"
+
+###################################################################
+
+        - run:
+            name: Deploy frontend objects
+            command: |
                 cd frontend
                 npm i
-#       - run:
-#           name: Get backend url
-#           command: |
-#             # your code here
-#             export API_URL="http://${BACKEND_IP}:3030"
-#             echo "${API_URL}"
-#       - run:
-#           name: Deploy frontend objects
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure      
-                    
+                npm build
+
+        # Here's where you will add some code to rollback on failure      
+
+###################################################################
+
+
+
+
+
+
+
+
+
 #   deploy-backend:
 #     docker:
 #       # Docker image here that supports Ansible
