@@ -369,44 +369,44 @@ jobs:
 
 #         # Here's where you will add some code to rollback on failure      
 
-###################################################################
-        # - run:
-        #     name: Get backend url & Deploy frontend objects
-        #     command: |
-        #         BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
-        #         echo "${BACKEND_IP}"
-        #         export API_URL="http://${BACKEND_IP}:3030"
-        #         echo "API_URL=$API_URL" >> frontend/.env
-        #         echo "${API_URL}"
-        #         cd frontend
-        #         npm run build
-        #         aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive 
 
 
 ######################################################################################
 
 
+deploy-backend:
+        docker:
+            - image: python:3.7-alpine3.12
+            # Docker image here that supports Ansible
+        steps:
+            # Checkout code from git
+            - checkout
+            # Add ssh keys with fingerprint
+            - add_ssh_keys:
+                  fingerprints:
+                      - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
+            # attach workspace
+            - attach_workspace:
+                  at: ~/
+            - run:
+                  name: Install dependencies
+                  command: |
+                      # your code here
+                      apk add --update tar gzip ansible nodejs npm curl openssh-client
+                      pip install awscli
+            - restore_cache:
+                  keys:
+                      - "backend-dist"
+            - write-env-variables
+
+
+##################################################################################################
 
 
 
 
 
-#   deploy-backend:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Deploy backend
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+
 
 #   smoke-test:
 #     docker:
@@ -490,8 +490,8 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
