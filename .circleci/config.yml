@@ -335,37 +335,37 @@ jobs:
 
 
 
-#   deploy-frontend:
-#         docker:
-#         - image: circleci/node:13.8.0
-#         steps:
-#         - checkout
-#         - restore_cache:
-#             keys: [frontend-build]
-#         - run:
-#             name: Install dependencies
-#             command: |
-#                 sudo apt install python-pip
-#                 sudo pip install awscli
+  deploy-frontend:
+        docker:
+        - image: circleci/node:13.8.0
+        steps:
+        - checkout
+        - restore_cache:
+            keys: [frontend-build]
+        - run:
+            name: Install dependencies
+            command: |
+                sudo apt install python-pip
+                sudo pip install awscli
 
 
 ###################################################################
 
-#         - run:
-#             name: Get backend url
-#             command: |
-#                 BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
-#                 export API_URL="http://${BACKEND_IP}:3030"
-#                 echo "${API_URL}"
+        - run:
+            name: Get backend url
+            command: |
+                BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
+                export API_URL="http://${BACKEND_IP}:3030"
+                echo "${API_URL}"
 
 # ###################################################################
 
-#         - run:
-#             name: Deploy frontend objects
-#             command: |
-#                 cd frontend
-#                 npm i
-#                 npm build
+        - run:
+            name: Deploy frontend objects
+            command: |
+                cd frontend
+                npm i
+                npm build
 
 #         # Here's where you will add some code to rollback on failure      
 
@@ -488,8 +488,8 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-    #   - deploy-frontend:
-    #       requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
