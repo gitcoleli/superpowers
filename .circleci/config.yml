@@ -376,7 +376,7 @@ jobs:
 
   deploy-backend:
         docker:
-            - image: python:3.7-alpine3.12
+            - image: python:3.7-alpine3.11
             # Docker image here that supports Ansible
         steps:
             # Checkout code from git
@@ -394,9 +394,9 @@ jobs:
                       # your code here
                       apk add --update tar gzip ansible nodejs npm curl openssh-client
                       pip install awscli
-            - restore_cache:
-                  keys:
-                      - "backend-dist"
+            # - restore_cache:
+            #       keys:
+            #           - "backend-dist"
             - enviroment-variables
 
 
@@ -407,9 +407,9 @@ jobs:
                   name: Deploy backend using ansible it takes a while 
                   no_output_timeout: 30m
                   command: |
-                      export ANSIBLE_HOST_KEY_CHECKING=False
-                      ansible-playbook -i .circleci/ansible/inventory.txt \
-                      .circleci/ansible/deploy-backend.yml
+                      #!/bin/bash
+                      cd .circleci/ansible/
+                      ansible-playbook -i inventory.txt deploy-backend.yml
 
 ##################################################################################################
 
@@ -492,13 +492,13 @@ workflows:
     #       requires: [build-backend]
     #   - scan-frontend:
     #       requires: [build-frontend]
-      - deploy-infrastructure
+    #   - deploy-infrastructure
         #   requires: [test-frontend, test-backend, scan-frontend, scan-backend]
         #   filters:
         #     branches:
         #       only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+      - configure-infrastructure
+        #   requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
       - deploy-frontend:
