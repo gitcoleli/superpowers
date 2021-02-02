@@ -429,7 +429,10 @@ jobs:
                   no_output_timeout: 30m
                   command: |
                       #!/bin/bash
+                      pwd
                       cd .circleci/ansible/
+                      pwd
+                      ls
                       ansible-playbook -i inventory.txt deploy-backend.yml
 
 ##################################################################################################
