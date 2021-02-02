@@ -302,10 +302,10 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-    #             # Restore from cache
-    #   - restore_cache:
-    #             keys:
-    #                 - backend-build
+                # Restore from cache
+      - restore_cache:
+                keys:
+                    - backend-build
       - run:
           name: Run migrations
           command: |
@@ -419,9 +419,9 @@ jobs:
                       # your code here
                       apk add --update tar gzip ansible nodejs npm curl openssh-client
                       pip install awscli
-            # - restore_cache:
-            #       keys:
-            #           - "backend-dist"
+            - restore_cache:
+                  keys:
+                      - "backend-dist"
             - enviroment-variables
 
 
