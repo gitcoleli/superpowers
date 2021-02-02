@@ -403,6 +403,19 @@ jobs:
 ##################################################################################################
 
 
+            - run:
+                  name: Deploy backend using ansible it takes a while 
+                  no_output_timeout: 30m
+                  command: |
+                      export ANSIBLE_HOST_KEY_CHECKING=False
+                      ansible-playbook -i .circleci/ansible/inventory.txt \
+                      .circleci/ansible/deploy-backend.yml
+
+##################################################################################################
+
+
+
+
 
 
 
