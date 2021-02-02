@@ -1,17 +1,24 @@
 version: 2.1
 
-# commands:
-#   destroy-environment:
-#     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-#     parameters:
-#       # Add parameter here   
-#     steps:
-#       - run:
-#           name: Destroy environments
-#           when: on_fail
-#           command: |
-#             # Your code here
-#             exit 1
+commands:
+    destroy-environment:
+        description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+        parameters:
+            # Add parameter here
+            workflow-id:
+                type: string
+                default: ${CIRCLE_WORKFLOW_ID:0:7}
+        steps:
+            - run:
+                  name: Destroy environments
+                  when: on_fail
+                  command: |
+                      # Your code here
+                      aws s3 rb s3://udapeople-<< parameters.workflow-id >> --force  
+                      aws cloudformation delete-stack \
+                          --stack-name "backend-stack-<< parameters.workflow-id >>"
+                      aws cloudformation delete-stack \
+                          --stack-name "frontend-stack-<< parameters.workflow-id >>"
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -155,39 +162,53 @@ jobs:
                       npm install
                       npm audit --audit-level=critical
 
-#   deploy-infrastructure:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Ensure back-end infrastructure exists
-#           command: |
-#             aws cloudformation deploy \
-#               --template-file .circleci/files/backend.yml \
-#               #--tags project=your-tag \
-#               # --stack-name "your back-end stack name with workflow id" \
-#               # --parameter-overrides ID="your workflow id"  
-#               exit 1
-#       - run:
-#           name: Ensure front-end infrastructure exist
-#           command: |
-#             aws cloudformation deploy \
-#               --template-file .circleci/files/frontend.yml \
-#               #--tags project=your-tag \
-#               # --stack-name "your front-end stack name with workflow id" \
-#               # --parameter-overrides ID="your workflow id"  
-#               exit 1
-#       - run:
-#           name: Add back-end ip to ansible inventory
-#           command: |
-#             # Your code here
-#             exit 1
-#       - persist_to_workspace:
-#           root: ~/
-#           paths:
-#             - project/.circleci/ansible/inventory.txt
-#       # Here's where you will add some code to rollback on failure      
+# deploy infra into AWS using Cloud Formation ##########################################################
+
+  deploy-infrastructure:
+        docker:
+            # Docker image here that supports AWS CLI
+            - image: amazon/aws-cli
+        steps:
+            # Checkout code from git
+            - checkout
+            - run: yum -y install tar gzip
+            - add_ssh_keys:
+                  fingerprints:
+                      - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
+            - run:
+                  name: Ensure back-end infrastructure exists
+                  command: |
+                      aws cloudformation deploy \
+                          --template-file .circleci/files/backend.yml \
+                          --tags project=udapeople \
+                          --stack-name "backend-stack-${CIRCLE_WORKFLOW_ID:0:8}" \
+                          --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:8}
+            - run:
+                  name: Ensure front-end infrastructure exist
+                  command: |
+                      aws cloudformation deploy \
+                          --template-file .circleci/files/frontend.yml \
+                          --tags project=udapeople \
+                          --stack-name "frontend-stack-${CIRCLE_WORKFLOW_ID:0:8}" \
+                          --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:8}
+            - run:
+                  name: Add back-end ip to ansible inventory
+                  command: |
+                      # Your code here
+                      echo "Adding backend ip to inventory"
+                      aws ec2 describe-instances \
+                          --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                          --filters "Name=tag:project,Values=udapeople" \
+                          --output text >> .circleci/ansible/inventory.txt
+                      cat .circleci/ansible/inventory.txt
+            - persist_to_workspace:
+                  root: ~/
+                  paths:
+                      - project/.circleci/ansible/inventory.txt
+            # Here's where you will add some code to rollback on failure
+            # - destroy-environment
+
+# configure the infrastructure that has been deployed into AWS ##############################################################
 
 #   configure-infrastructure:
 #     docker:
@@ -326,19 +347,19 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [test-feature-branch]
+    #   - test-frontend:
+    #       requires: [build-frontend]
+    #   - test-backend:
+    #       requires: [build-backend]
+    #   - scan-backend:
+    #       requires: [build-backend]
+    #   - scan-frontend:
+    #       requires: [build-frontend]
+      - deploy-infrastructure
+        #   requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+        #   filters:
+        #     branches:
+        #       only: [main]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
       # - run-migrations:
