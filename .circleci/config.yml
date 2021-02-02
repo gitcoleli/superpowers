@@ -298,6 +298,7 @@ jobs:
             npm install oauth-sign
             npm run migrations > migrationresult.txt
 
+# send the information out to memstash ##################################################################################################################
                 
 #       - run:
 #           name: Send migration results to memstash
@@ -311,15 +312,20 @@ jobs:
 
 
 
-#   deploy-frontend:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
+    deploy-frontend:
+        docker:
+        - image: circleci/node:13.8.0
+        steps:
+        - checkout
+        - restore_cache:
+            keys: [frontend-build]
+        - run:
+            name: Install dependencies
+            command: |
+                sudo apt install python-pip
+                sudo pip install awscli
+                cd frontend
+                npm i
 #       - run:
 #           name: Get backend url
 #           command: |
@@ -429,8 +435,8 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
