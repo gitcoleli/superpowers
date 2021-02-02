@@ -335,7 +335,7 @@ jobs:
             cd backend
             ls
             cat migrations_log.txt
-            more migrations_log.txt
+
 
 
 # send the information out to memstash ##################################################################################################################
@@ -357,142 +357,202 @@ jobs:
 
 # deploy the Frontend ################################################################################
 
+deploy-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt install python-pip python-dev
+            sudo pip install awscli
+      - run:
+          name: Get backend url & Deploy frontend objects
+          command: |
+            BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
+            echo "${BACKEND_IP}"
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL=$API_URL" >> frontend/.env
+            echo "${API_URL}"
+            cd frontend
+            npm run build
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive 
+      - destroy-environment
+    #   - revert-migrations
 
 
 
-  deploy-frontend:
-        docker:
-        - image: circleci/node:13.8.0
-        steps:
-        - checkout
-        # - restore_cache:
-        #     keys: [frontend-build]
-        - run:
-            name: Install dependencies
-            command: |
-                sudo apt install python-pip
-                sudo pip install awscli
 
 
-###################################################################
 
-        - run:
-            name: Get backend url
-            command: |
-                BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
-                export API_URL="http://${BACKEND_IP}:3030"
-                echo "${API_URL}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#   deploy-frontend:
+#         docker:
+#         - image: circleci/node:13.8.0
+#         steps:
+#         - checkout
+#         # - restore_cache:
+#         #     keys: [frontend-build]
+#         - run:
+#             name: Install dependencies
+#             command: |
+#                 sudo apt install python-pip
+#                 sudo pip install awscli
+
 
 # ###################################################################
 
-        - run:
-            name: Deploy frontend objects
-            command: |
-                cd frontend
-                npm i
-                npm build
+#         - run:
+#             name: Get backend url
+#             command: |
+#                 BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
+#                 export API_URL="http://${BACKEND_IP}:3030"
+#                 echo "${API_URL}"
 
-#         # Here's where you will add some code to rollback on failure      
-        - destroy-environment
+# # ###################################################################
+
+#         - run:
+#             name: Deploy frontend objects
+#             command: |
+#                 cd frontend
+#                 npm i
+#                 npm build
+
+# #         # Here's where you will add some code to rollback on failure      
+#         - destroy-environment
 
 
-######################################################################################
+# ######################################################################################
 
 
-  deploy-backend:
-        docker:
-            - image: python:3.7-alpine3.11
-            # Docker image here that supports Ansible
-        steps:
-            # Checkout code from git
-            - checkout
-            # Add ssh keys with fingerprint
-            - add_ssh_keys:
-                  fingerprints:
-                      - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
-            # attach workspace
-            - attach_workspace:
-                  at: ~/
-            - run:
-                  name: Install dependencies
-                  command: |
-                      # your code here
-                      apk add --update tar gzip ansible nodejs npm curl openssh-client
-                      pip install awscli
-            - restore_cache:
-                  keys:
-                      - "backend-dist"
-            - enviroment-variables
+#   deploy-backend:
+#         docker:
+#             - image: python:3.7-alpine3.11
+#             # Docker image here that supports Ansible
+#         steps:
+#             # Checkout code from git
+#             - checkout
+#             # Add ssh keys with fingerprint
+#             - add_ssh_keys:
+#                   fingerprints:
+#                       - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
+#             # attach workspace
+#             - attach_workspace:
+#                   at: ~/
+#             - run:
+#                   name: Install dependencies
+#                   command: |
+#                       # your code here
+#                       apk add --update tar gzip ansible nodejs npm curl openssh-client
+#                       pip install awscli
+#             - restore_cache:
+#                   keys:
+#                       - "backend-dist"
+#             - enviroment-variables
 
 
 ##################################################################################################
 
 
-            - run:
-                  name: Deploy backend using ansible it takes a while 
-                  no_output_timeout: 30m
-                  command: |
-                      #!/bin/bash
-                      pwd
-                      cd .circleci/ansible/
-                      pwd
-                      ls
-                      cat inventory.txt
-                      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt deploy-backend.yml
-            - destroy-environment
+            # - run:
+            #       name: Deploy backend using ansible it takes a while 
+            #       no_output_timeout: 30m
+            #       command: |
+            #           #!/bin/bash
+            #           pwd
+            #           cd .circleci/ansible/
+            #           pwd
+            #           ls
+            #           cat inventory.txt
+            #           ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt deploy-backend.yml
+            # - destroy-environment
 ##################################################################################################
 
 
 
-  smoke-test:
-        docker:
-            # Lightweight Docker image
-            - image: python:3.7-alpine3.11
-        steps:
-            # Checkout code from git
-            - checkout
-            - add_ssh_keys:
-                  fingerprints:
-                      - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
-            - attach_workspace:
-                  at: ~/
+#   smoke-test:
+#         docker:
+#             # Lightweight Docker image
+#             - image: python:3.7-alpine3.11
+#         steps:
+#             # Checkout code from git
+#             - checkout
+#             - add_ssh_keys:
+#                   fingerprints:
+#                       - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
+#             - attach_workspace:
+#                   at: ~/
 
-################  install software #############################
+# ################  install software #############################
 
-            - run:
-                  name: Install dependencies
-                  command: |
-                      # your code here
-                      apk add --update tar gzip ansible nodejs npm curl openssh-client
-                      pip install awscli
+#             - run:
+#                   name: Install dependencies
+#                   command: |
+#                       # your code here
+#                       apk add --update tar curl openssh-client
+#                       pip install awscli
 
-#####################  Get URL ###############################################
+# #####################  Get URL ###############################################
 
-            - run:
+#             - run:
 
-                name: Get backend url and smoke test
-                no_output_timeout: 30m
-                command: |
-                    BACKEND_URL=$(aws ec2 describe-instances \
-                    --filters Name=instance-state-name,Values=running \
-                    --query 'Reservations[*].Instances[*].PublicDnsName' \
-                    --output text)
-                    echo "${BACKEND_URL}"
-                    curl "http://${BACKEND_URL}:3030/api/status"
+#                 name: Get backend url and smoke test
+#                 no_output_timeout: 30m
+#                 command: |
+#                     BACKEND_URL=$(aws ec2 describe-instances \
+#                     --filters Name=instance-state-name,Values=running \
+#                     --query 'Reservations[*].Instances[*].PublicDnsName' \
+#                     --output text)
+#                     echo "${BACKEND_URL}"
+#                     curl "http://${BACKEND_URL}:3030/api/status"
 
 
 
-################################front end test #################################################################################
-            - run:
-                name: Frontend smoke test.
-                command: |
-                    URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
-                    if curl -s ${URL} | grep "Welcome"
-                    then
-                    return 0
-                    else
-                    return 1
-                    fi
+# ################################front end test #################################################################################
+#             - run:
+#                 name: Frontend smoke test.
+#                 command: |
+#                     URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
+#                     if curl -s ${URL} | grep "Welcome"
+#                     then
+#                     return 0
+#                     else
+#                     return 1
+#                     fi
 
 #############################################################################################################################
 
@@ -558,11 +618,11 @@ workflows:
     #       requires: [deploy-infrastructure]
     #   - run-migrations:
     #       requires: [configure-infrastructure]
-    #   - deploy-frontend:
+      - deploy-frontend
     #       requires: [run-migrations]
     #   - deploy-backend:
     #       requires: [configure-infrastructure]
-      - smoke-test
+    #   - smoke-test
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
