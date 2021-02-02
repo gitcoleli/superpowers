@@ -83,7 +83,7 @@ jobs:
 
     build-backend:
         docker:
-            - image: cimg/base:2021.01
+            - image: circleci/node:13.8.0
         steps:
             - checkout
             - restore_cache:
