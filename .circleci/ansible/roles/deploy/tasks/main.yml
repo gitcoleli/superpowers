@@ -1,11 +1,5 @@
 ---
 
-- name: Copy backend 
-  become: true
-  copy:
-      src: /root/project/backend
-      dest: /home/ubuntu
-
 - name: "install pm2"
   become: true
   npm:
@@ -22,6 +16,16 @@
       ls
       printenv
       npm install
+
+
+- name: Copy backend 
+  become: true
+  copy:
+      src: /root/project/backend
+      dest: /home/ubuntu
+
+
+
 
 - name: building node services
   become: true
