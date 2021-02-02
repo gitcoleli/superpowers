@@ -437,7 +437,8 @@ jobs:
                       cd .circleci/ansible/
                       pwd
                       ls
-                      ansible-playbook -i inventory.txt deploy-backend.yml
+                      cat inventory.txt
+                      #ansible-playbook -i inventory.txt deploy-backend.yml
 
 ##################################################################################################
 
@@ -527,12 +528,12 @@ workflows:
         #       only: [main]
       - configure-infrastructure
         #   requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
+    #   - run-migrations:
+    #       requires: [configure-infrastructure]
     #   - deploy-frontend:
     #       requires: [run-migrations]
       - deploy-backend:
-          requires: [run-migrations]
+          requires: [configure-infrastructure]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
