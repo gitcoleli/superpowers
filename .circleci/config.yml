@@ -309,7 +309,7 @@ jobs:
             #!/bin/bash
             cd backend
             ls
-            more cat migrations_log.txt
+            more migrations_log.txt
 
 
 # send the information out to memstash ##################################################################################################################
