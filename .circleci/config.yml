@@ -263,6 +263,11 @@ jobs:
                         apk add --update pip 
                         pip install --upgrade pip 
                         pip install awscli
+                        aws ec2 describe-instances \
+                        --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                        --filters "Name=tag:project,Values=udapeople" \
+                        --output text >> .circleci/ansible/inventory.txt
+                        cat .circleci/ansible/inventory.txt
 #             - destroy-environment
 
 
@@ -277,10 +282,10 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-                # Restore from cache
-      - restore_cache:
-                keys:
-                    - backend-build
+    #             # Restore from cache
+    #   - restore_cache:
+    #             keys:
+    #                 - backend-build
       - run:
           name: Run migrations
           command: |
@@ -340,8 +345,8 @@ jobs:
         - image: circleci/node:13.8.0
         steps:
         - checkout
-        - restore_cache:
-            keys: [frontend-build]
+        # - restore_cache:
+        #     keys: [frontend-build]
         - run:
             name: Install dependencies
             command: |
