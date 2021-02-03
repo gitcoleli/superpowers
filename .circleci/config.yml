@@ -39,20 +39,20 @@ commands:
                     echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
                     echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
 
-revert-migrations:
-    description: Revert the last migration if successfully run in the current workflow.
-    steps:
-      - run:
-          name: Revert migrations
-          when: on_fail
-          command: |
-            SUCCESS=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
-            if(( SUCCESS==1 )); 
-            then
-              cd ~/project/backend
-              npm install
-              npm run migrations:revert
-            fi
+    revert-migrations:
+        description: Revert the last migration if successfully run in the current workflow.
+        steps:
+        - run:
+            name: Revert migrations
+            when: on_fail
+            command: |
+                SUCCESS=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
+                if(( SUCCESS==1 )); 
+                then
+                cd ~/project/backend
+                npm install
+                npm run migrations:revert
+                fi
 
 
 
