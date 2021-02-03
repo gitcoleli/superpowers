@@ -247,7 +247,7 @@ jobs:
                         apk add --update ansible
                         echo "Ansible inventories >> Requires for the next job"
                         cat .circleci/ansible/inventory.txt
-            # - enviroment-variables
+            - enviroment-variables
 
             - run:
                     name: Configure server
