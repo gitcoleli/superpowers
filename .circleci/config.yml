@@ -370,9 +370,8 @@ jobs:
         - run:
             name: Get backend url & Deploy frontend objects
             command: |
-                BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
-                echo "${BACKEND_IP}"
-                export API_URL="http://${BACKEND_IP}:3030"
+                export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
+                export API_URL="http://$(sed -n 2p .circleci/ansible/inventory.txt):3030"
                 echo "API_URL=$API_URL" >> frontend/.env
                 echo "${API_URL}"
                 cd frontend
@@ -560,8 +559,8 @@ jobs:
 workflows:
   default:
     jobs:
-    #   - build-frontend
-    #   - build-backend
+      - build-frontend
+      - build-backend
     #   - test-frontend:
     #       requires: [build-frontend]
     #   - test-backend:
@@ -570,22 +569,22 @@ workflows:
     #       requires: [build-backend]
     #   - scan-frontend:
     #       requires: [build-frontend]
-    #   - deploy-infrastructure:
+      - deploy-infrastructure
     #       requires: [test-frontend, test-backend, scan-frontend, scan-backend]
     #       filters:
     #         branches:
     #           only: [main]
-    #   - configure-infrastructure:
-    #       requires: [deploy-infrastructure]
-    #   - run-migrations:
-    #       requires: [configure-infrastructure]
-    #   - deploy-frontend:
-    #       requires: [run-migrations]
-    #   - deploy-backend:
-    #       requires: [configure-infrastructure]
-    #   - smoke-test:
-    #       requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [configure-infrastructure]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+    #   - cloudfront-update
       #     requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
