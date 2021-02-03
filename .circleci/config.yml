@@ -247,10 +247,6 @@ jobs:
                         cat .circleci/ansible/inventory.txt
             - enviroment-variables
 
-
-################## configure the Server ##################################################################
-
-
             - run:
                     name: Configure server
                     no_output_timeout: 20m
@@ -275,8 +271,6 @@ jobs:
 
 
 # ###########################run the migration ###########################################################################################################
-
-
 
 
   run-migrations:
@@ -309,7 +303,6 @@ jobs:
             cat migrations_log.txt
 
 
-######################### oh where is my log file ################################################################################################################################
       - run:
           name: is log file there ?
           command: |
@@ -318,9 +311,6 @@ jobs:
             ls
             cat migrations_log.txt
 
-
-
-# #######################send the information out to memstash ##################################################################################################################
                 
       - run:
           name: Send migration results to memstash
@@ -396,10 +386,6 @@ jobs:
                       - "backend-dist"
             - enviroment-variables
 
-
-######################### ansible backend #########################################################################
-
-
             - run:
                   name: Deploy backend using ansible it takes a while 
                   no_output_timeout: 30m
@@ -434,8 +420,6 @@ jobs:
             - attach_workspace:
                   at: ~/
 
-# ################  install software #############################
-
             - run:
                   name: Install dependencies
                   command: |
@@ -443,10 +427,7 @@ jobs:
                       apk add --update tar curl openssh-client
                       pip install awscli
 
-# #####################  Get URL ###############################################
-
             - run:
-
                 name: Get backend url and smoke test
                 no_output_timeout: 30m
                 command: |
@@ -457,9 +438,6 @@ jobs:
                     echo "${BACKEND_URL}"
                     curl "http://${BACKEND_URL}:3030/api/status"
 
-
-
-# ################################front end test #################################################################################
             - run:
                 name: Frontend smoke test.
                 command: |
@@ -544,8 +522,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
+    #   - build-frontend
+    #   - build-backend
     #   - test-frontend:
     #       requires: [build-frontend]
     #   - test-backend:
@@ -554,21 +532,21 @@ workflows:
     #       requires: [build-backend]
     #   - scan-frontend:
     #       requires: [build-frontend]
-      - deploy-infrastructure
+    #   - deploy-infrastructure
     #       requires: [test-frontend, test-backend, scan-frontend, scan-backend]
     #       filters:
     #         branches:
     #           only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [configure-infrastructure]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+      - configure-infrastructure
+    #       requires: [deploy-infrastructure]
+    #   - run-migrations:
+    #       requires: [configure-infrastructure]
+    #   - deploy-frontend:
+    #       requires: [run-migrations]
+    #   - deploy-backend:
+    #       requires: [configure-infrastructure]
+    #   - smoke-test:
+    #       requires: [deploy-backend, deploy-frontend]
     #   - cloudfront-update
       #     requires: [smoke-test]
       # - cleanup:
