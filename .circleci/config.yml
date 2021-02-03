@@ -368,19 +368,7 @@ jobs:
                 sudo apt install python-pip 
                 sudo pip install awscli
 
-        - run:
-                  name: Get backend url
-                  command: |
-                      # your code here
-                      export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
-                      export API_URL="http://$(sed -n 2p .circleci/ansible/inventory.txt):3030"
-                      echo "${API_URL}"
-                      echo ENVIRONMENT=production > "frontend/.env"
-                      echo NODE_ENV=production >> "frontend/.env"
-                      echo API_URL=$API_URL >> "frontend/.env"
-                      cd frontend
-                      npm run build
-                      aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive
+
 
 
 
@@ -579,31 +567,31 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [configure-infrastructure]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+    #   - build-frontend
+    #   - build-backend
+    #   - test-frontend:
+    #       requires: [build-frontend]
+    #   - test-backend:
+    #       requires: [build-backend]
+    #   - scan-backend:
+    #       requires: [build-backend]
+    #   - scan-frontend:
+    #       requires: [build-frontend]
+    #   - deploy-infrastructure:
+    #       requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+    #       filters:
+    #         branches:
+    #           only: [main]
+    #   - configure-infrastructure:
+    #       requires: [deploy-infrastructure]
+    #   - run-migrations:
+    #       requires: [configure-infrastructure]
+    #   - deploy-frontend:
+    #       requires: [run-migrations]
+    #   - deploy-backend:
+    #       requires: [configure-infrastructure]
+    #   - smoke-test:
+    #       requires: [deploy-backend, deploy-frontend]
       - cloudfront-update
       #     requires: [smoke-test]
       # - cleanup:
