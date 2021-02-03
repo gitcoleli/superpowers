@@ -21,7 +21,7 @@ commands:
                           --stack-name "frontend-stack-<< parameters.workflow-id >>"
 
 
-enviroment-variables:
+    enviroment-variables:
         description: env variables 
         steps:
             - run:
@@ -540,7 +540,7 @@ workflows:
     #         branches:
     #           only: [main]
       - configure-infrastructure
-    #       requires: [deploy-infrastructure]
+        #   requires: [deploy-infrastructure]
     #   - run-migrations:
     #       requires: [configure-infrastructure]
     #   - deploy-frontend:
