@@ -36,7 +36,7 @@ revert-migrations:
               npm run migrations:revert
             fi
 
-    enviroment-variables:
+enviroment-variables:
         description: env variables 
         steps:
             - run:
