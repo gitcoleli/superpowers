@@ -245,7 +245,6 @@ jobs:
                     command: |
                         # Your code here
                         apk add --update ansible
-                        echo "Ansible inventories >> Requires for the next job"
                         cat .circleci/ansible/inventory.txt
             - enviroment-variables
 
@@ -263,11 +262,11 @@ jobs:
                         apk add --update pip 
                         pip install --upgrade pip 
                         pip install awscli
-                        aws ec2 describe-instances \
-                        --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                        --filters "Name=tag:project,Values=udapeople" \
-                        --output text >> .circleci/ansible/inventory.txt
-                        cat .circleci/ansible/inventory.txt
+                        # aws ec2 describe-instances \
+                        # --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                        # --filters "Name=tag:project,Values=udapeople" \
+                        # --output text >> .circleci/ansible/inventory.txt
+                        # cat .circleci/ansible/inventory.txt
             - destroy-environment
 
 
@@ -534,13 +533,13 @@ workflows:
     #       requires: [build-backend]
     #   - scan-frontend:
     #       requires: [build-frontend]
-    #   - deploy-infrastructure
+      - deploy-infrastructure
     #       requires: [test-frontend, test-backend, scan-frontend, scan-backend]
     #       filters:
     #         branches:
     #           only: [main]
-      - configure-infrastructure
-        #   requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
     #   - run-migrations:
     #       requires: [configure-infrastructure]
     #   - deploy-frontend:
