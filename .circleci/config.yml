@@ -6,7 +6,7 @@ commands:
         parameters:
             workflow-id:
                 type: string
-                default: ${CIRCLE_WORKFLOW_ID:0:8}
+                default: ${CIRCLE_WORKFLOW_ID}
         steps:
             - run:
                   name: Destroy environments
@@ -197,16 +197,16 @@ jobs:
                       aws cloudformation deploy \
                           --template-file .circleci/files/backend.yml \
                           --tags project=udapeople \
-                          --stack-name "backend-stack-${CIRCLE_WORKFLOW_ID:0:8}" \
-                          --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:8}
+                          --stack-name "backend-stack-${CIRCLE_WORKFLOW_ID}" \
+                          --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
             - run:
                   name: Ensure front-end infrastructure exist
                   command: |
                       aws cloudformation deploy \
                           --template-file .circleci/files/frontend.yml \
                           --tags project=udapeople \
-                          --stack-name "frontend-stack-${CIRCLE_WORKFLOW_ID:0:8}" \
-                          --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:8}
+                          --stack-name "frontend-stack-${CIRCLE_WORKFLOW_ID}" \
+                          --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
             - run:
                   name: Add back-end ip to ansible inventory
                   command: |
@@ -358,7 +358,7 @@ jobs:
                 echo "${API_URL}"
                 cd frontend
                 npm run build
-                aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive 
+                aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID} --recursive 
         - destroy-environment
         - revert-migrations
 
@@ -448,7 +448,7 @@ jobs:
             - run:
                 name: Frontend smoke test.
                 command: |
-                    URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:8}.s3-website-us-west-2.amazonaws.com"
+                    URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
                     if curl -s ${URL} | grep "Welcome"
                     then
                     return 0
@@ -489,9 +489,9 @@ jobs:
             aws cloudformation deploy \
             --template-file /root/project/.circleci/files/cloudfront.yml \
             --stack-name udapeople-cloudfront \
-            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:8}" \
+            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
             --tags project=udapeople
-            curl -H "Content-Type: text/plain" -H "token: OldWorkflowID-${CIRCLE_WORKFLOW_ID:0:8}" \
+            curl -H "Content-Type: text/plain" -H "token: OldWorkflowID-${CIRCLE_WORKFLOW_ID}" \
             --request PUT \
             --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
       
