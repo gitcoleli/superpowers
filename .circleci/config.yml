@@ -346,15 +346,20 @@ jobs:
         - run:
             name: Get backend url & Deploy frontend objects
             command: |
-                export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
-                export API_URL="http://$(sed -n 2p .circleci/ansible/inventory.txt):3030"
-                echo "API_URL=$API_URL" >> frontend/.env
-                echo "${API_URL}"
-                cd frontend
-                npm run build
-                aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive 
-        - destroy-environment
-        - revert-migrations
+                pwd
+                ls
+                cat  .circleci/ansible/inventory.txt
+
+
+                # export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
+                # export API_URL="http://$(sed -n 2p .circleci/ansible/inventory.txt):3030"
+                # echo "API_URL=$API_URL" >> frontend/.env
+                # echo "${API_URL}"
+                # cd frontend
+                # npm run build
+                # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:8} --recursive 
+        # - destroy-environment
+        # - revert-migrations
 
 
 
@@ -533,21 +538,21 @@ workflows:
     #       requires: [build-backend]
     #   - scan-frontend:
     #       requires: [build-frontend]
-      - deploy-infrastructure
+    #   - deploy-infrastructure
     #       requires: [test-frontend, test-backend, scan-frontend, scan-backend]
     #       filters:
     #         branches:
     #           only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [configure-infrastructure]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+    #   - configure-infrastructure:
+    #       requires: [deploy-infrastructure]
+    #   - run-migrations:
+    #       requires: [configure-infrastructure]
+      - deploy-frontend
+    #       requires: [run-migrations]
+    #   - deploy-backend:
+    #       requires: [configure-infrastructure]
+    #   - smoke-test:
+    #       requires: [deploy-backend, deploy-frontend]
     #   - cloudfront-update
       #     requires: [smoke-test]
       # - cleanup:
