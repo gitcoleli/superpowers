@@ -526,8 +526,8 @@ jobs:
             --request PUT \
             --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
       
-      - revert-migrations
-      - destroy-environment # Rollback on failure  
+    #   - revert-migrations
+    #   - destroy-environment # Rollback on failure  
 
 
 
