@@ -247,21 +247,6 @@ jobs:
                         cat .circleci/ansible/inventory.txt
             - enviroment-variables
 
-################ temp aws install for re adding the ip only for testing  ##############################
-
-            # - run:
-            #         name: adding ip to inv again 
-            #         command: |
-            #             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
-            #             aws ec2 describe-instances \
-            #             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            #             --filters "Name=tag:project,Values=udapeople" \
-            #             --output text >> .circleci/ansible/inventory.txt
-            #             cat .circleci/ansible/inventory.txt            
-            # - persist_to_workspace:
-            #       root: ~/
-            #       paths:
-            #           - project/.circleci/ansible/inventory.txt
 
 ################## configure the Server ##################################################################
 
