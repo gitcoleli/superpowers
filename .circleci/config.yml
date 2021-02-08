@@ -347,6 +347,7 @@ jobs:
             command: |
                 pwd
                 ls
+                BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
                 aws ec2 describe-instances \
                 --query 'Reservations[*].Instances[*].PublicIpAddress' \
                 --filters "Name=tag:project,Values=udapeople" \
@@ -437,12 +438,9 @@ jobs:
             - run:
                 name: Get backend url and smoke test
                 no_output_timeout: 30m
-                command: |
-                    BACKEND_URL=$(aws ec2 describe-instances \
-                    --filters Name=instance-state-name,Values=running \
-                    --query 'Reservations[*].Instances[*].PublicDnsName' \
-                    --output text)
-                    echo "${BACKEND_URL}"
+                command: |       
+                    export BACKEND_URL=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/ipaddress)
+                    echo "${BACKEND_IP}"
                     curl "http://${BACKEND_URL}:3030/api/status"
 
             - run:
