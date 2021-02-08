@@ -154,8 +154,8 @@ jobs:
                   name: Frontend Scan 
                   command: |
                       cd frontend
-                      npm audit fix --audit-level=critical --force
-                      npm install
+                      nppm install
+                      npm audit fix --audit-level=critical
                       npm audit --audit-level=critical
 
   scan-backend:
@@ -174,8 +174,8 @@ jobs:
                   name: Backend Scan 
                   command: |
                       cd backend
-                      npm audit fix --audit-level=critical --force
                       npm install
+                      npm audit fix --audit-level=critical
                       npm audit --audit-level=critical
 
 # ############################deploy infra into AWS using Cloud Formation ##########################################################
