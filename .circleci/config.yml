@@ -528,13 +528,13 @@ jobs:
                 # if [ "${OldWorkflowID}" != "" ]
                 #   then
                     #   aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-                      aws cloudformation delete-stack  --stack-name "backend-stack-${OldWorkflowID}"
+                aws cloudformation delete-stack  --stack-name "backend-stack-${OldWorkflowID}"
                     #   aws cloudformation delete-stack  --stack-name "frontend-stack-${OldWorkflowID}"
                 #   else
                 #       echo "This must be the first run, no old workflow id."  
-                fi
-      - destroy-environment
-      - revert-migrations
+                # fi
+    #   - destroy-environment
+    #   - revert-migrations
 
 
 
