@@ -208,6 +208,11 @@ jobs:
             #               --stack-name "frontend-stack-${CIRCLE_WORKFLOW_ID}" \
             #               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
             - run:
+                    name: Save current workflow id to memstash
+                    command: |
+                        curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "${CIRCLE_WORKFLOW_ID}" https://api.memstash.io/values/workflow_id
+
+            - run:
                   name: Add back-end ip 
                   command: |
                       # Your code here
@@ -518,8 +523,8 @@ jobs:
             aws cloudformation delete-stack  --stack-name "backend-stack-${OldWorkflowID}"
             export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
             echo STACKS: "$STACKS" 
-            ls 
-            
+
+
 
 
 
