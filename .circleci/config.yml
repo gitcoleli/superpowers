@@ -528,7 +528,7 @@ jobs:
                 #  aws cloudformation delete-stack \
                 #  --stack-name "backend-stack-<< OldWorkflowID >>"
                  aws cloudformation delete-stack \
-                 --stack-name "backend-stack-"backend-stack-${OldWorkflowID}"
+                 --stack-name "backend-stack-${OldWorkflowID}"
 
                 # if [ "${OldWorkflowID}" != "" ]
                 #   then
