@@ -513,7 +513,7 @@ cleanup:
           name: Get old stack workflow id from memstash, get list of stack from 
           command: |
             # Get old workflow id
-            export OldWorkflowID=$(curl -H "token: gajdulj" --request GET https://api.memstash.io/values/persist_workflow_id)
+            export OldWorkflowID=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/persist_workflow_id)
             # Get stack list
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo "Old id ${OldWorkflowID}"
