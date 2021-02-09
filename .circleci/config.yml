@@ -518,6 +518,8 @@ jobs:
             aws cloudformation delete-stack  --stack-name "backend-stack-${OldWorkflowID}"
             export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
             echo STACKS: "$STACKS" 
+            ls 
+            
 
 
 
