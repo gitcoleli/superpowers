@@ -199,16 +199,16 @@ jobs:
                           --tags project=udapeople \
                           --stack-name "backend-stack-${CIRCLE_WORKFLOW_ID}" \
                           --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
-            # - run:
-            #       name: Ensure front-end infrastructure exist
-            #       command: |
-            #           aws cloudformation deploy \
-            #               --template-file .circleci/files/frontend.yml \
-            #               --tags project=udapeople \
-            #               --stack-name "frontend-stack-${CIRCLE_WORKFLOW_ID}" \
-            #               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
             - run:
-                  name: Add back-end ip to ansible inventory
+                  name: Ensure front-end infrastructure exist
+                  command: |
+                      aws cloudformation deploy \
+                          --template-file .circleci/files/frontend.yml \
+                          --tags project=udapeople \
+                          --stack-name "frontend-stack-${CIRCLE_WORKFLOW_ID}" \
+                          --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
+            - run:
+                  name: Add back-end ip 
                   command: |
                       # Your code here
                       echo "Adding backend ip to inventory"
@@ -220,6 +220,11 @@ jobs:
                       curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID}
                       pwd
                       curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID}
+                      aws ec2 describe-instances \
+                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                      --filters "Name=tag:project,Values=udapeople" \
+                      --output text >> .circleci/ansible/inventory.txt
+                      cat .circleci/ansible/inventory.txt
 
 
                     #  curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/${CIRCLE_WORKFLOW_ID}
@@ -230,12 +235,12 @@ jobs:
                     #   cat .circleci/ansible/inventory.txt
                     #   BACKEND_IP=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/${CIRCLE_WORKFLOW_ID})
                     #   print "BACKEND_IP"
-            # - persist_to_workspace:
-            #       root: ~/
-            #       paths:
-            #           - project/.circleci/ansible/inventory.txt
-            # # Here's where you will add some code to rollback on failure
-            # - destroy-environment
+            - persist_to_workspace:
+                  root: ~/
+                  paths:
+                      - project/.circleci/ansible/inventory.txt
+            # Here's where you will add some code to rollback on failure
+            - destroy-environment
 
 # #######################configure the infrastructure that has been deployed into AWS ##############################################################
 
@@ -443,7 +448,7 @@ jobs:
                 name: Get backend url and smoke test
                 no_output_timeout: 30m
                 command: |       
-                    export BACKEND_URL=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96$" --request GET https://api.memstash.io/values/${CIRCLE_WORKFLOW_ID}
+                    export BACKEND_URL=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID})
                     echo "${BACKEND_IP}"
                     curl "http://${BACKEND_URL}:3030/api/status"
 
@@ -554,16 +559,16 @@ workflows:
         #   filters:
         #     branches:
         #       only: [main]
-    #   - configure-infrastructure:
-    #       requires: [deploy-infrastructure]
-    #   - run-migrations:
-    #       requires: [configure-infrastructure]
-    #   - deploy-frontend:
-    #       requires: [run-migrations]
-    #   - deploy-backend:
-    #       requires: [configure-infrastructure]
-    #   - smoke-test:
-    #       requires: [deploy-backend, deploy-frontend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [configure-infrastructure]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
     #   - cloudfront-update:
     #       requires: [smoke-test]
     #   - cleanup:
