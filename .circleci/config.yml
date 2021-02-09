@@ -396,7 +396,7 @@ jobs:
 
             - run:
                   name: Deploy backend using ansible it takes a while 
-                  no_output_timeout: 30m
+                  no_output_timeout: 60m
                   command: |
                       #!/bin/bash
                       pwd
