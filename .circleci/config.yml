@@ -448,8 +448,9 @@ jobs:
                 name: Get backend url and smoke test
                 no_output_timeout: 30m
                 command: |       
+                    curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID}
                     export BACKEND_URL=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID})
-                    echo "${BACKEND_IP}"
+                    echo "${BACKEND_URL}"
                     curl "http://${BACKEND_URL}:3030/api/status"
 
             - run:
