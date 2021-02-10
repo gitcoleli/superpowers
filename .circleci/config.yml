@@ -212,7 +212,7 @@ jobs:
                   name: Add back-end ip 
                   command: |
                       echo "Adding backend ip to inventory and memstash"
-                      URLS=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress"  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}")
+                      URLS=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress"  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" --output text )
                       echo "$URLS"
                       curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "$URLS" https://api.memstash.io/values/urls
                       aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:project,Values=udapeople" --output text >> .circleci/ansible/inventory.txt
@@ -501,7 +501,7 @@ jobs:
             aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text
             echo "the ID's are different lets delete"
             aws cloudformation delete-stack --stack-name backend-stack-${oldid}
-            aws s3 rm "s3://udapeople-${oldid}" --recursive
+            # aws s3 rm "s3://udapeople-${oldid}" --recursive
             aws cloudformation delete-stack --stack-name frontend-stack-${oldid}
             aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text
             else 
@@ -549,6 +549,6 @@ workflows:
     #       requires: [deploy-backend, deploy-frontend]
     #   - cloudfront-update:
     #       requires: [smoke-test]
-    #   - cleanup:
+      - cleanup:
+          requires: [deploy-infrastructure]
     #       requires: [cloudfront-update]
-
