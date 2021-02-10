@@ -216,7 +216,6 @@ jobs:
                   name: Add back-end ip 
                   command: |
                       # Your code here
-                      curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "${CIRCLE_WORKFLOW_ID}" https://api.memstash.io/values/fruit --ssl-no-revoke
                       echo "Adding backend ip to inventory"
                       echo ${CIRCLE_WORKFLOW_ID}
                       URLS=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress"  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}"  --output text)
