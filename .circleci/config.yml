@@ -191,10 +191,10 @@ jobs:
             - add_ssh_keys:
                   fingerprints:
                       - "d1:1d:fe:4c:a7:92:72:1f:97:5f:8b:b0:07:db:f9:09"
-            - run:
-                    name: Save current workflow id to memstash
-                    command: |
-                        curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "${CIRCLE_WORKFLOW_ID}" https://api.memstash.io/values/fruit
+            # - run:
+            #         name: Save current workflow id to memstash
+            #         command: |
+            #             curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "${CIRCLE_WORKFLOW_ID}" https://api.memstash.io/values/fruit
 
 
             - run:
