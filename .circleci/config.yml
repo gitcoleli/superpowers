@@ -45,7 +45,7 @@ commands:
             name: Revert migrations
             when: on_fail
             command: |
-                SUCCESS=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
+                SUCCESS=$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/migrations)
                 if(( SUCCESS==1 )); 
                 then
                 cd ~/project/backend
@@ -297,6 +297,7 @@ jobs:
             touch migrations_log.txt
             npm run migrations >> migrations_log.txt
             cat migrations_log.txt
+            curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "1" https://api.memstash.io/values/migrations
 
 
       - run:
