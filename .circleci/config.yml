@@ -496,7 +496,7 @@ jobs:
             --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
 
     #   - run: 
-    #       name: pushing new id to memstash
+    #       name: pushing new id to memstash if needed for testing purposes
     #       command: |
     #         echo ${CIRCLE_WORKFLOW_ID}
     #         curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "${CIRCLE_WORKFLOW_ID}" https://api.memstash.io/values/fruit --ssl-no-revoke
