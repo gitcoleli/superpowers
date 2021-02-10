@@ -223,12 +223,8 @@ jobs:
                       echo "${CIRCLE_WORKFLOW_ID}"
                       echo "$URLS"
                       curl -H "Content-Type: text/plain" -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID}
-                      pwd
                       curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID}
-                      aws ec2 describe-instances \
-                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                      --filters "Name=tag:project,Values=udapeople" \
-                      --output text >> .circleci/ansible/inventory.txt
+                      aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:project,Values=udapeople" --output text >> .circleci/ansible/inventory.txt
                       cat .circleci/ansible/inventory.txt
 
             - persist_to_workspace:
@@ -551,21 +547,21 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
+    #   - build-frontend
+    #   - build-backend
+    #   - test-frontend:
+    #       requires: [build-frontend]
+    #   - test-backend:
+    #       requires: [build-backend]
+    #   - scan-backend:
+    #       requires: [build-backend]
+    #   - scan-frontend:
+    #       requires: [build-frontend]
+      - deploy-infrastructure
+        #   requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+        #   filters:
+        #     branches:
+        #       only: [main]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
@@ -573,7 +569,7 @@ workflows:
       - deploy-frontend:
           requires: [run-migrations]
       - deploy-backend:
-          requires: [configure-infrastructure]
+          requires: [deploy-frontend]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
