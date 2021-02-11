@@ -1,5 +1,5 @@
 URL1 - https://github.com/gitcoleli/superpowers
-URL2 - http://udapeople-fd8eac48-f2be-43b0-b87c-cdecced7408d.s3-us-west-2.amazonaws.com/index.html#/employees
-URL3 - http://dli8rqcr3kak5.cloudfront.net
-URL4 - http://ec2-34-219-158-238.us-west-2.compute.amazonaws.com:3030/api/status
+URL2 - http://udapeople-7fc1c67c-52c4-4775-ba1c-0a26d0051ffa.s3-us-west-2.amazonaws.com/index.html#/employees
+URL3 - http://d3c708soqe14wj.cloudfront.net
+URL4 - http://ec2-34-223-247-34.us-west-2.compute.amazonaws.com:3030/api/status
 URL5 - http://ec2-52-27-202-126.us-west-2.compute.amazonaws.com:9090/graph
