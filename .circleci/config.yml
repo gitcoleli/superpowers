@@ -327,8 +327,7 @@ jobs:
             command: |
                 aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:project,Values=udapeople" --output text >> .circleci/ansible/inventory.txt
                 cat .circleci/ansible/inventory.txt
-                # export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
-                export API_URL="http://$(sed -n 2p .circleci/ansible/inventory.txt):3030"
+                export API_URL="http://$(curl -H "token: ee7cabe0-f97f-4a0e-9507-89961a8b4c96" --request GET https://api.memstash.io/values/urls):3030"
                 echo "API_URL=$API_URL" >> frontend/.env
                 echo "${API_URL}"
                 cd frontend
@@ -504,6 +503,8 @@ jobs:
             aws cloudformation delete-stack --stack-name backend-stack-${oldid} --output text
             aws s3 rm "s3://udapeople-${oldid}" --recursive
             aws cloudformation delete-stack --stack-name frontend-stack-${oldid} --output text
+            aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text
+            echo look less stacks 
             else 
             echo "#### nothing to do here move on ####"
             fi 
@@ -544,7 +545,7 @@ workflows:
       - deploy-frontend:
           requires: [run-migrations]
       - deploy-backend:
-          requires: [deploy-frontend]
+          requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
